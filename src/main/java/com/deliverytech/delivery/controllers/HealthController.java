@@ -22,7 +22,7 @@ public class HealthController {
     @GetMapping("/info")
     public AppInfo info() {
         return new AppInfo(
-            "Delivery Tech API",
+            "Delivery Tech API 🚀",
             "1.0.0",
             "Luiza Matos",
             System.getProperty("java.version"),
