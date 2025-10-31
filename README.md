@@ -120,10 +120,9 @@ src/
 ---
 
 ## 🔧 Configurações
-Propriedade	- Valor
-Porta padrão - 8080
-Banco de dados	- H2 (em memória)
-Profile ativo	- development
+| Propriedade | Porta Padrão |  Banco de Dados  | Profile Ativo |
+|-------------|--------------|------------------| --------------|
+|   `valor`   |    `8080`    | `H2 (em memória)`| `development` |
 
 ---
 
@@ -134,5 +133,5 @@ Google Drive - Delivery Tech
 ---
 
 ## 👩‍💻 Desenvolvido por Luiza Matos
-📚 Estudante de Ciência da Computação (2º período - semipresencial)
-💻 Desenvolvido com Java 21 + Spring Boot 3.2.x
+- 📚 Estudante de Ciência da Computação (2º período - semipresencial)
+- 💻 Desenvolvido com Java 21 + Spring Boot 3.2.x
