@@ -129,6 +129,7 @@ src/
 ## 📲 Recursos Extras
 📸 Screenshots e configuração inicial
 Google Drive - Delivery Tech
+- https://drive.google.com/drive/folders/1cCp5FQbLBepOGAh5VbqUz6AYjOzhDh9F?usp=drive_link
 
 ---
 
