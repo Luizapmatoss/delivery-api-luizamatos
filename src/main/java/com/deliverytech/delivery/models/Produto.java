@@ -1,34 +1,52 @@
 package com.deliverytech.delivery.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 
 @Entity
 @Table(name = "produtos")
 public class Produto {
 
+    private Boolean disponivel;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "O nome do produto é obrigatório.")
     private String nome;
+
+    @NotBlank(message = "A categoria é obrigatória.")
     private String categoria;
+
+    @Positive(message = "O preço deve ser maior que zero.")
     private double preco;
-    private Boolean disponivel = true;
+
+    @NotBlank(message = "A descrição é obrigatória.")
+    private String descricao;
 
     @ManyToOne
     @JoinColumn(name = "restaurante_id")
     private Restaurante restaurante;
 
-    public Produto() {}
+    public Produto(Boolean disponivel) {
+        this.disponivel = disponivel;
+    }
 
-    public Produto(String nome, String categoria, double preco, Boolean disponivel, Restaurante restaurante) {
+    public Produto(String nome, String categoria, double preco, Boolean disponivel, String descricao, Restaurante restaurante) {
         this.nome = nome;
         this.categoria = categoria;
         this.preco = preco;
         this.disponivel = disponivel;
+        this.descricao = descricao;
         this.restaurante = restaurante;
     }
 
+    public Produto() {
+
+    }
+
+    // Getters e Setters
     public Long getId() {
         return id;
     }
@@ -64,6 +82,13 @@ public class Produto {
         this.disponivel = disponivel;
     }
 
+    public String getDescricao() {
+        return descricao;
+    }
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
     public Restaurante getRestaurante() {
         return restaurante;
     }
@@ -79,6 +104,7 @@ public class Produto {
                 ", categoria='" + categoria + '\'' +
                 ", preco=" + preco +
                 ", disponivel=" + disponivel +
+                ", descricao='" + descricao + '\'' +
                 ", restaurante=" + (restaurante != null ? restaurante.getNome() : "null") +
                 '}';
     }

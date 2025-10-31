@@ -1,24 +1,34 @@
 package com.deliverytech.delivery.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import java.util.*;
 
 @Entity
-@Table(name = "resturantes")
-
+@Table(name = "restaurantes")
 public class Restaurante {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "O nome do restaurante é obrigatório.")
     private String nome;
+
+    @NotBlank(message = "A categoria é obrigatória.")
     private String categoria;
+
+    @NotNull
     private Boolean ativo = true;
-    private Double avaliacao = 0.0;
 
     @OneToMany(mappedBy = "restaurante", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Produto> produtos = new ArrayList<>();
+
+    @Min(0)
+    @Max(5)
+    private Double avaliacao = 0.0;
 
     public Restaurante() {}
 
@@ -67,7 +77,6 @@ public class Restaurante {
     public List<Produto> getProdutos() {
         return produtos;
     }
-
     public void setProdutos(List<Produto> produtos) {
         this.produtos = produtos;
     }

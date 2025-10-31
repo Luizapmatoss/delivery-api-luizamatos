@@ -4,7 +4,6 @@ import com.deliverytech.delivery.models.Restaurante;
 import com.deliverytech.delivery.repository.RestauranteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
@@ -28,7 +27,7 @@ public class RestauranteService {
     // Buscar por ID
     public Restaurante buscarPorId(Long id) {
         return restauranteRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Restaurante não encontrado!"));
+                .orElseThrow(() -> new RuntimeException("Restaurante não encontrado!"));
     }
 
     // Atualizar restaurante
@@ -36,13 +35,26 @@ public class RestauranteService {
         Restaurante restaurante = buscarPorId(id);
         restaurante.setNome(atualizado.getNome());
         restaurante.setCategoria(atualizado.getCategoria());
+        restaurante.setAvaliacao(atualizado.getAvaliacao());
         return restauranteRepository.save(restaurante);
     }
 
     // Ativar/Inativar restaurante
-    public void alterarStatus(Long id, boolean ativo) {
+    public Restaurante alterarStatus(Long id, boolean ativo) {
         Restaurante restaurante = buscarPorId(id);
         restaurante.setAtivo(ativo);
         restauranteRepository.save(restaurante);
+        return restaurante;
+    }
+
+    // Buscar por categoria
+    public List<Restaurante> buscarPorCategoria(String categoria) {
+        return restauranteRepository.buscarAtivosPorCategoriaOrdenadosPorAvaliacao(categoria);
+    }
+
+    // Deletar restaurante
+    public void deletar(Long id) {
+        Restaurante restaurante = buscarPorId(id);
+        restauranteRepository.delete(restaurante);
     }
 }
