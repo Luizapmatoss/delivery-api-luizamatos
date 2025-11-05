@@ -9,6 +9,7 @@ import com.deliverytech.delivery.repository.ClienteRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -78,19 +79,18 @@ public class PedidoService {
         Map<Long, Produto> mapaProdutos = produtosPersistidos.stream()
                 .collect(Collectors.toMap(Produto::getId, p -> p));
 
-        double total = 0.0;
+        BigDecimal total = BigDecimal.ZERO; // inicializa corretamente
         List<Produto> itensPersistidos = new ArrayList<>();
 
         for (Long id : idsEnviados) {
             Produto produto = mapaProdutos.get(id);
             if (produto == null) {
-                // tecnicamente já filtramos ids faltando, então não deve chegar aqui, mas previne NPE
                 throw new IllegalArgumentException("Produto não encontrado durante processamento: id=" + id);
             }
             if (produto.getDisponivel() == null || !produto.getDisponivel()) {
                 throw new IllegalArgumentException("Produto indisponível: id=" + produto.getId() + " nome=" + produto.getNome());
             }
-            total += produto.getPreco();
+            total = total.add(produto.getPreco()); // soma BigDecimal
             itensPersistidos.add(produto);
         }
 
@@ -130,7 +130,6 @@ public class PedidoService {
 
         List<Pedido> pedidos = pedidoRepository.findByClienteId(clienteId);
         pedidos.forEach(p -> {
-            // touch the collection
             if (p.getItens() != null) {
                 p.getItens().size();
             }

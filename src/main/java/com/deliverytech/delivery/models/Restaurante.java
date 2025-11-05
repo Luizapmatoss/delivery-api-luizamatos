@@ -3,6 +3,7 @@ package com.deliverytech.delivery.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import java.math.BigDecimal;
 import java.util.*;
 
 @Entity
@@ -22,21 +23,26 @@ public class Restaurante {
     @NotNull
     private Boolean ativo = true;
 
-    @OneToMany(mappedBy = "restaurante", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private List<Produto> produtos = new ArrayList<>();
+    @NotNull(message = "A taxa de entrega é obrigatória.")
+    @DecimalMin(value = "0.0", inclusive = true, message = "A taxa de entrega não pode ser negativa.")
+    private BigDecimal taxaEntrega = BigDecimal.ZERO;
 
     @Min(0)
     @Max(5)
     private Double avaliacao = 0.0;
 
+    @OneToMany(mappedBy = "restaurante", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Produto> produtos = new ArrayList<>();
+
     public Restaurante() {}
 
-    public Restaurante(String nome, String categoria, Boolean ativo, Double avaliacao) {
+    public Restaurante(String nome, String categoria, Boolean ativo, Double avaliacao, BigDecimal taxaEntrega) {
         this.nome = nome;
         this.categoria = categoria;
         this.ativo = ativo;
         this.avaliacao = avaliacao;
+        this.taxaEntrega = taxaEntrega;
     }
 
     public Long getId() {
@@ -67,6 +73,13 @@ public class Restaurante {
         this.ativo = ativo;
     }
 
+    public BigDecimal getTaxaEntrega() {
+        return taxaEntrega;
+    }
+    public void setTaxaEntrega(BigDecimal taxaEntrega) {
+        this.taxaEntrega = taxaEntrega;
+    }
+
     public Double getAvaliacao() {
         return avaliacao;
     }
@@ -88,6 +101,7 @@ public class Restaurante {
                 ", nome='" + nome + '\'' +
                 ", categoria='" + categoria + '\'' +
                 ", ativo=" + ativo +
+                ", taxaEntrega=" + taxaEntrega +
                 ", avaliacao=" + avaliacao +
                 '}';
     }

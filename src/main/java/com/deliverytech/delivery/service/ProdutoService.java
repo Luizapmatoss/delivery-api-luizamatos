@@ -5,6 +5,8 @@ import com.deliverytech.delivery.models.Restaurante;
 import com.deliverytech.delivery.repository.ProdutoRepository;
 import com.deliverytech.delivery.repository.RestauranteRepository;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -24,7 +26,7 @@ public class ProdutoService {
         Restaurante restaurante = restauranteRepository.findById(restauranteId)
                 .orElseThrow(() -> new IllegalArgumentException("Restaurante não encontrado!"));
 
-        if (produto.getPreco() <= 0) {
+        if (produto.getPreco() == null || produto.getPreco().compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("O preço deve ser maior que zero!");
         }
 
@@ -40,7 +42,9 @@ public class ProdutoService {
         if (dadosAtualizados.getNome() != null) produto.setNome(dadosAtualizados.getNome());
         if (dadosAtualizados.getDescricao() != null) produto.setDescricao(dadosAtualizados.getDescricao());
         if (dadosAtualizados.getCategoria() != null) produto.setCategoria(dadosAtualizados.getCategoria());
-        if (dadosAtualizados.getPreco() > 0) produto.setPreco(dadosAtualizados.getPreco());
+        if (dadosAtualizados.getPreco() != null && dadosAtualizados.getPreco().compareTo(BigDecimal.ZERO) > 0) {
+            produto.setPreco(dadosAtualizados.getPreco());
+        }
 
         return produtoRepository.save(produto);
     }

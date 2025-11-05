@@ -1,6 +1,9 @@
 package com.deliverytech.delivery.models;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 
@@ -19,8 +22,8 @@ public class Produto {
     @NotBlank(message = "A categoria é obrigatória.")
     private String categoria;
 
-    @Positive(message = "O preço deve ser maior que zero.")
-    private double preco;
+    @DecimalMin(value = "0.0", inclusive = false, message = "O preço deve ser maior que zero.")
+    private BigDecimal preco;
 
     @NotBlank(message = "A descrição é obrigatória.")
     private String descricao;
@@ -33,7 +36,7 @@ public class Produto {
         this.disponivel = disponivel;
     }
 
-    public Produto(String nome, String categoria, double preco, Boolean disponivel, String descricao, Restaurante restaurante) {
+    public Produto(String nome, String categoria, @DecimalMin(value = "0.0", inclusive = false, message = "O preço deve ser maior que zero.") BigDecimal preco, Boolean disponivel, String descricao, Restaurante restaurante) {
         this.nome = nome;
         this.categoria = categoria;
         this.preco = preco;
@@ -68,10 +71,11 @@ public class Produto {
         this.categoria = categoria;
     }
 
-    public double getPreco() {
+    public BigDecimal getPreco() {
         return preco;
     }
-    public void setPreco(double preco) {
+    
+    public void setPreco(BigDecimal preco) {
         this.preco = preco;
     }
 

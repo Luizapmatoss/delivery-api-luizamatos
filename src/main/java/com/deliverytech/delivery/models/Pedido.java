@@ -1,6 +1,7 @@
 package com.deliverytech.delivery.models;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -17,6 +18,11 @@ public class Pedido {
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
 
+    // Um pedido pertence a um restaurante
+    @ManyToOne
+    @JoinColumn(name = "restaurante_id")
+    private Restaurante restaurante;
+
     // Um pedido pode ter vários produtos
     @ManyToMany
     @JoinTable(
@@ -26,10 +32,11 @@ public class Pedido {
     )
     private List<Produto> itens;
 
-    private Double valorTotal;
+    private BigDecimal valorTotal;
     private String status;
     private LocalDateTime dataCriacao;
 
+    // ===== Getters e Setters =====
     public Long getId() {
         return id;
     }
@@ -46,6 +53,14 @@ public class Pedido {
         this.cliente = cliente;
     }
 
+    public Restaurante getRestaurante() {
+        return restaurante;
+    }
+
+    public void setRestaurante(Restaurante restaurante) {
+        this.restaurante = restaurante;
+    }
+
     public List<Produto> getItens() {
         return itens;
     }
@@ -54,11 +69,11 @@ public class Pedido {
         this.itens = itens;
     }
 
-    public Double getValorTotal() {
+    public BigDecimal getValorTotal() {
         return valorTotal;
     }
 
-    public void setValorTotal(Double valorTotal) {
+    public void setValorTotal(BigDecimal valorTotal) {
         this.valorTotal = valorTotal;
     }
 
@@ -76,5 +91,22 @@ public class Pedido {
 
     public void setDataCriacao(LocalDateTime dataCriacao) {
         this.dataCriacao = dataCriacao;
+    }
+
+    @Override
+    public String toString() {
+        return "Pedido{" +
+                "id=" + id +
+                ", cliente=" + (cliente != null ? cliente.getNome() : "null") +
+                ", restaurante=" + (restaurante != null ? restaurante.getNome() : "null") +
+                ", valorTotal=" + valorTotal +
+                ", status='" + status + '\'' +
+                ", dataCriacao=" + dataCriacao +
+                '}';
+    }
+
+    public void setValorTotal(double d) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setValorTotal'");
     }
 }
