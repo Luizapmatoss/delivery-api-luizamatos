@@ -1,61 +1,73 @@
 package com.deliverytech.delivery.controllers;
 
+import com.deliverytech.delivery.dto.ClienteDTO;
+import com.deliverytech.delivery.dto.response.ClienteResponseDTO;
 import com.deliverytech.delivery.models.Cliente;
 import com.deliverytech.delivery.service.ClienteService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/clientes")
+@RequestMapping("/api/clientes")
 public class ClienteController {
 
     @Autowired
     private ClienteService clienteService;
 
-    // Criar cliente
     @PostMapping
-    public ResponseEntity<Cliente> cadastrar(@Valid @RequestBody Cliente cliente) {
-        Cliente novoCliente = clienteService.cadastrarCliente(cliente);
-
-        // Cria a URI do novo recurso /clientes/{id}
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(novoCliente.getId())
-                .toUri();
-
-        return ResponseEntity.created(uri).body(novoCliente);
+    public ResponseEntity<ClienteResponseDTO> cadastrarCliente(@Valid @RequestBody ClienteDTO dto) {
+        Cliente cliente = clienteService.cadastrarCliente(dto);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                .buildAndExpand(cliente.getId()).toUri();
+        return ResponseEntity.created(uri).body(toResponse(cliente));
     }
 
-    // Listar todos os clientes
-    @GetMapping
-    public ResponseEntity<List<Cliente>> listarTodos() {
-        return ResponseEntity.ok(clienteService.listarTodos());
-    }
-
-    // Buscar cliente por ID
     @GetMapping("/{id}")
-    public ResponseEntity<Cliente> buscarPorId(@PathVariable Long id) {
-        Cliente cliente = clienteService.buscarPorId(id);
-        return ResponseEntity.ok(cliente);
+    public ResponseEntity<ClienteResponseDTO> buscarPorId(@PathVariable Long id) {
+        Cliente cliente = clienteService.buscarClientePorId(id);
+        return ResponseEntity.ok(toResponse(cliente));
     }
 
-    // Atualizar cliente
+    @GetMapping
+    public ResponseEntity<List<ClienteResponseDTO>> listarClientesAtivos() {
+        List<ClienteResponseDTO> clientes = clienteService.listarClientesAtivos()
+                .stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(clientes);
+    }
+
     @PutMapping("/{id}")
-    public ResponseEntity<Cliente> atualizar(@PathVariable Long id, @Valid @RequestBody Cliente cliente) {
-        Cliente atualizado = clienteService.atualizarCliente(id, cliente);
-        return ResponseEntity.ok(atualizado);
+    public ResponseEntity<ClienteResponseDTO> atualizarCliente(@PathVariable Long id, @Valid @RequestBody ClienteDTO dto) {
+        Cliente atualizado = clienteService.atualizarCliente(id, dto);
+        return ResponseEntity.ok(toResponse(atualizado));
     }
 
-    // Inativar (ou deletar) cliente
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> inativar(@PathVariable Long id) {
-        clienteService.inativarCliente(id);
-        return ResponseEntity.noContent().build();
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<ClienteResponseDTO> ativarDesativarCliente(@PathVariable Long id) {
+        Cliente cliente = clienteService.ativarDesativarCliente(id);
+        return ResponseEntity.ok(toResponse(cliente));
     }
 
+    @GetMapping("/email/{email}")
+    public ResponseEntity<ClienteResponseDTO> buscarPorEmail(@PathVariable String email) {
+        Cliente cliente = clienteService.buscarClientePorEmail(email);
+        return ResponseEntity.ok(toResponse(cliente));
+    }
+
+    // Conversão Entity -> ResponseDTO
+    private ClienteResponseDTO toResponse(Cliente cliente) {
+        return new ClienteResponseDTO(
+                cliente.getId(),
+                cliente.getNome(),
+                cliente.getEmail(),
+                cliente.getAtivo()
+        );
+    }
 }

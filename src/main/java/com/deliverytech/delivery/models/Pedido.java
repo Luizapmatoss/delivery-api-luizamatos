@@ -3,7 +3,9 @@ package com.deliverytech.delivery.models;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Table(name = "pedidos")
@@ -15,34 +17,38 @@ public class Pedido {
 
     // Um pedido pertence a um cliente
     @ManyToOne
-    @JoinColumn(name = "cliente_id")
+    @JoinColumn(name = "cliente_id", nullable = false)
     private Cliente cliente;
 
     // Um pedido pertence a um restaurante
     @ManyToOne
-    @JoinColumn(name = "restaurante_id")
+    @JoinColumn(name = "restaurante_id", nullable = false)
     private Restaurante restaurante;
 
-    // Um pedido pode ter vários produtos
-    @ManyToMany
-    @JoinTable(
-            name = "pedido_produtos",
-            joinColumns = @JoinColumn(name = "pedido_id"),
-            inverseJoinColumns = @JoinColumn(name = "produto_id")
-    )
-    private List<Produto> itens;
+    // Um pedido possui vários itens (relação com ItemPedido)
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ItemPedido> itens = new ArrayList<>();
 
+    // Valor total do pedido
     private BigDecimal valorTotal;
+
     private String status;
     private LocalDateTime dataCriacao;
+
+    // ===== Construtores =====
+    public Pedido() {
+        this.dataCriacao = LocalDateTime.now();
+        this.status = "PENDENTE";
+        this.valorTotal = BigDecimal.ZERO;
+    }
 
     // ===== Getters e Setters =====
     public Long getId() {
         return id;
     }
-
-    public void setId(Long id) {
-        this.id = id;
+    
+    public void setId(Long itens2) {
+        this.id = itens2;
     }
 
     public Cliente getCliente() {
@@ -61,11 +67,11 @@ public class Pedido {
         this.restaurante = restaurante;
     }
 
-    public List<Produto> getItens() {
+    public List<ItemPedido> getItens() {
         return itens;
     }
 
-    public void setItens(List<Produto> itens) {
+    public void setItens(List<ItemPedido> itens) {
         this.itens = itens;
     }
 
@@ -93,6 +99,26 @@ public class Pedido {
         this.dataCriacao = dataCriacao;
     }
 
+    // ===== Métodos utilitários =====
+    public void adicionarItem(ItemPedido item) {
+        itens.add(item);
+        item.setPedido(this);
+        calcularValorTotal();
+    }
+
+    public void removerItem(ItemPedido item) {
+        itens.remove(item);
+        item.setPedido(null);
+        calcularValorTotal();
+    }
+
+    public void calcularValorTotal() {
+        this.valorTotal = itens.stream()
+        .map(ItemPedido::getSubtotal) 
+        .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+    }
+
     @Override
     public String toString() {
         return "Pedido{" +
@@ -103,10 +129,5 @@ public class Pedido {
                 ", status='" + status + '\'' +
                 ", dataCriacao=" + dataCriacao +
                 '}';
-    }
-
-    public void setValorTotal(double d) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setValorTotal'");
     }
 }

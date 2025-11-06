@@ -1,0 +1,127 @@
+package com.deliverytech.delivery.service;
+
+import com.deliverytech.delivery.dto.ItemPedidoDTO;
+import com.deliverytech.delivery.dto.PedidoDTO;
+import com.deliverytech.delivery.enums.StatusPedido;
+import com.deliverytech.delivery.models.*;
+import com.deliverytech.delivery.repository.*;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.*;
+
+@Service
+public class PedidoServiceImpl implements PedidoService {
+
+    private final PedidoRepository pedidoRepository;
+    private final ProdutoRepository produtoRepository;
+    private final ClienteRepository clienteRepository;
+    private final RestauranteRepository restauranteRepository;
+    private final ItemPedidoRepository itemPedidoRepository;
+
+    public PedidoServiceImpl(
+            PedidoRepository pedidoRepository,
+            ProdutoRepository produtoRepository,
+            ClienteRepository clienteRepository,
+            RestauranteRepository restauranteRepository,
+            ItemPedidoRepository itemPedidoRepository) {
+
+        this.pedidoRepository = pedidoRepository;
+        this.produtoRepository = produtoRepository;
+        this.clienteRepository = clienteRepository;
+        this.restauranteRepository = restauranteRepository;
+        this.itemPedidoRepository = itemPedidoRepository;
+    }
+
+   @Override
+   @Transactional
+   public Pedido criarPedido(PedidoDTO dto) {
+    Cliente cliente = clienteRepository.findById(dto.getClienteId())
+    .orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado!"));
+    Restaurante restaurante = restauranteRepository.findById(dto.getRestauranteId())
+    .orElseThrow(() -> new IllegalArgumentException("Restaurante não encontrado!"));
+    
+    if (!cliente.getAtivo()) {
+        throw new IllegalArgumentException("Cliente inativo não pode fazer pedidos!");
+    }
+
+    Pedido pedido = new Pedido();
+    pedido.setCliente(cliente);
+    pedido.setRestaurante(restaurante);
+    pedido.setStatus(StatusPedido.PENDENTE.name());
+    pedido.setDataCriacao(LocalDateTime.now());
+
+    List<ItemPedido> itens = new ArrayList<>();
+    BigDecimal total = BigDecimal.ZERO;
+
+    for (ItemPedidoDTO itemDTO : dto.getItens()) {
+        Produto produto = produtoRepository.findById(itemDTO.getProdutoId())
+                .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado!"));
+
+        if (!produto.getDisponivel()) {
+            throw new IllegalArgumentException("Produto indisponível: " + produto.getNome());
+        }
+
+        ItemPedido item = new ItemPedido(pedido, produto, itemDTO.getQuantidade(), produto.getPreco());
+        itens.add(item);
+        total = total.add(item.getSubtotal());
+    }
+
+    pedido.setItens(itens);
+    pedido.setValorTotal(total);
+
+    return pedidoRepository.save(pedido);
+}
+
+
+    @Override
+    public Pedido criarPedido(Pedido pedido) {
+        throw new UnsupportedOperationException("Unimplemented method 'criarPedido'");
+    }
+
+    @Override
+    public Pedido buscarPedidoPorId(Long id) {
+        throw new UnsupportedOperationException("Unimplemented method 'buscarPedidoPorId'");
+    }
+
+    @Override
+    public List<Pedido> buscarPedidosPorCliente(Long clienteId) {
+        throw new UnsupportedOperationException("Unimplemented method 'buscarPedidosPorCliente'");
+    }
+
+    @Override
+    public Pedido atualizarStatusPedido(Long id, String status) {
+        throw new UnsupportedOperationException("Unimplemented method 'atualizarStatusPedido'");
+    }
+
+    @Override
+    public double calcularTotalPedido(PedidoDTO dto) {
+        throw new UnsupportedOperationException("Unimplemented method 'calcularTotalPedido'");
+    }
+
+    @Override
+    public void cancelarPedido(Long id) {
+        throw new UnsupportedOperationException("Unimplemented method 'cancelarPedido'");
+    }
+
+    @Override
+    public Object listarPorCliente(Long clienteId) {
+        throw new UnsupportedOperationException("Unimplemented method 'listarPorCliente'");
+    }
+
+    @Override
+    public Pedido atualizarStatusPedido(Long id, StatusPedido novoStatus) {
+        throw new UnsupportedOperationException("Unimplemented method 'atualizarStatusPedido'");
+    }
+
+    @Override
+    public double calcularTotalPedido(List<ItemPedidoDTO> itens) {
+        throw new UnsupportedOperationException("Unimplemented method 'calcularTotalPedido'");
+    }
+
+    @Override
+    public double calcularTotalPedido(Pedido pedido) {
+        throw new UnsupportedOperationException("Unimplemented method 'calcularTotalPedido'");
+    }
+}

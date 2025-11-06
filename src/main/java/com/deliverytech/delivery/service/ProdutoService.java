@@ -1,92 +1,31 @@
 package com.deliverytech.delivery.service;
 
+import com.deliverytech.delivery.dto.ProdutoDTO;
 import com.deliverytech.delivery.models.Produto;
-import com.deliverytech.delivery.models.Restaurante;
-import com.deliverytech.delivery.repository.ProdutoRepository;
-import com.deliverytech.delivery.repository.RestauranteRepository;
-import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
+import jakarta.validation.Valid;
+
 import java.util.List;
 
-@Service
-public class ProdutoService {
+public interface ProdutoService {
 
-    private final ProdutoRepository produtoRepository;
-    private final RestauranteRepository restauranteRepository;
+    Produto cadastrarProduto(ProdutoDTO dto);
 
-    public ProdutoService(ProdutoRepository produtoRepository,
-                          RestauranteRepository restauranteRepository) {
-        this.produtoRepository = produtoRepository;
-        this.restauranteRepository = restauranteRepository;
-    }
+    List<Produto> buscarProdutosPorRestaurante(Long restauranteId);
 
-    // Criar produto
-    public Produto cadastrar(Long restauranteId, Produto produto) {
-        Restaurante restaurante = restauranteRepository.findById(restauranteId)
-                .orElseThrow(() -> new IllegalArgumentException("Restaurante não encontrado!"));
+    Produto buscarProdutoPorId(Long id);
 
-        if (produto.getPreco() == null || produto.getPreco().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("O preço deve ser maior que zero!");
-        }
+    Produto atualizarProduto(Long id, Produto produto);
 
-        produto.setRestaurante(restaurante);
-        produto.setDisponivel(true);
-        return produtoRepository.save(produto);
-    }
+    Produto alterarDisponibilidade(Long id, boolean disponivel);
 
-    // Atualizar produto
-    public Produto atualizar(Long produtoId, Produto dadosAtualizados) {
-        Produto produto = buscarPorId(produtoId);
+    List<Produto> buscarProdutosPorCategoria(String categoria);
 
-        if (dadosAtualizados.getNome() != null) produto.setNome(dadosAtualizados.getNome());
-        if (dadosAtualizados.getDescricao() != null) produto.setDescricao(dadosAtualizados.getDescricao());
-        if (dadosAtualizados.getCategoria() != null) produto.setCategoria(dadosAtualizados.getCategoria());
-        if (dadosAtualizados.getPreco() != null && dadosAtualizados.getPreco().compareTo(BigDecimal.ZERO) > 0) {
-            produto.setPreco(dadosAtualizados.getPreco());
-        }
+    Produto cadastrar(Long restauranteId, Produto produto);
 
-        return produtoRepository.save(produto);
-    }
+    Object listarTodos();
 
-    // Buscar todos
-    public List<Produto> listarTodos() {
-        return produtoRepository.findAll();
-    }
+    void deletar(Long id);
 
-    // Buscar por id
-    public Produto buscarPorId(Long id) {
-        return produtoRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado!"));
-    }
-
-    // Alterar disponibilidade
-    public void alterarDisponibilidade(Long id, boolean disponivel) {
-        Produto produto = buscarPorId(id);
-        produto.setDisponivel(disponivel);
-        produtoRepository.save(produto);
-    }
-
-    // Listar por restaurante
-    public List<Produto> listarPorRestaurante(Long restauranteId) {
-        Restaurante restaurante = restauranteRepository.findById(restauranteId)
-                .orElseThrow(() -> new IllegalArgumentException("Restaurante não encontrado!"));
-        return produtoRepository.findByRestaurante(restaurante);
-    }
-
-    // Listar por categoria
-    public List<Produto> listarPorCategoria(String categoria) {
-        return produtoRepository.findByCategoriaIgnoreCase(categoria);
-    }
-
-    // Listar disponíveis
-    public List<Produto> listarDisponiveis() {
-        return produtoRepository.findByDisponivelTrue();
-    }
-
-    // Deletar produto
-    public void deletar(Long id) {
-        Produto produto = buscarPorId(id);
-        produtoRepository.delete(produto);
-    }
+    Produto atualizarProduto(Long id, ProdutoDTO dto);
 }

@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Configuration
 public class DataLoader implements CommandLineRunner {
@@ -54,10 +55,10 @@ public class DataLoader implements CommandLineRunner {
         produtoRepository.saveAll(List.of(p1, p2, p3, p4, p5));
 
         // ===== PEDIDOS =====
+
         Pedido ped1 = new Pedido();
         ped1.setCliente(c1);
         ped1.setRestaurante(r1);
-        ped1.setItens(List.of(p1, p2, p5));
         ped1.setValorTotal(new BigDecimal("43.00"));
         ped1.setStatus("ENTREGUE");
         ped1.setDataCriacao(LocalDateTime.now().minusDays(2));
@@ -65,10 +66,14 @@ public class DataLoader implements CommandLineRunner {
         Pedido ped2 = new Pedido();
         ped2.setCliente(c2);
         ped2.setRestaurante(r2);
-        ped2.setItens(List.of(p3, p4));
         ped2.setValorTotal(new BigDecimal("67.00"));
         ped2.setStatus("EM ANDAMENTO");
         ped2.setDataCriacao(LocalDateTime.now());
+
+pedidoRepository.saveAll(List.of(ped1, ped2));
+
+System.out.println("✅ Dados inseridos com sucesso!");
+
 
         pedidoRepository.saveAll(List.of(ped1, ped2));
 
@@ -78,14 +83,9 @@ public class DataLoader implements CommandLineRunner {
 
         // Cenário 1: Busca de Cliente por Email
         System.out.println("\n🔎 Cenário 1: Busca de Cliente por Email");
-        clienteRepository.findByEmail("luiza@gmail.com").ifPresentOrElse(
-                cliente -> {
-                    System.out.println("✅ Cliente encontrado com dados corretos:");
-                    System.out.println("Nome: " + cliente.getNome());
-                    System.out.println("Email: " + cliente.getEmail());
-                },
-                () -> System.out.println("❌ Nenhum cliente encontrado com esse e-mail.")
-        );
+        final Cliente clienteEncontrado = clienteRepository.findByEmail("luiza@gmail.com").get();
+        System.out.println("Resultado esperado → Cliente encontrado com dados corretos:");
+        System.out.println(clienteEncontrado);
 
         // Cenário 2: Produtos por Restaurante
         System.out.println("\n🍔 Cenário 2: Produtos por Restaurante");

@@ -18,4 +18,5 @@ public interface RestauranteRepository extends JpaRepository<Restaurante, Long> 
 
     @Query("SELECT r FROM Restaurante r WHERE r.categoria = :categoria AND r.ativo = true ORDER BY r.avaliacao DESC")
     List<Restaurante> buscarAtivosPorCategoriaOrdenadosPorAvaliacao(String categoria);
+    List<Restaurante> findByCategoriaAndAtivoTrue(String categoria);
 }

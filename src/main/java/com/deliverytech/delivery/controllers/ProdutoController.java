@@ -1,75 +1,70 @@
 package com.deliverytech.delivery.controllers;
 
+import com.deliverytech.delivery.dto.ProdutoDTO;
+import com.deliverytech.delivery.dto.response.ProdutoResponseDTO;
 import com.deliverytech.delivery.models.Produto;
 import com.deliverytech.delivery.service.ProdutoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/produtos")
+@RequestMapping("/api/produtos")
 public class ProdutoController {
 
     @Autowired
     private ProdutoService produtoService;
 
-    // Criar produto em um restaurante
-    @PostMapping("/restaurante/{restauranteId}")
-    public ResponseEntity<Produto> cadastrar(
-            @PathVariable Long restauranteId,
-            @Valid @RequestBody Produto produto) {
-
-        Produto novo = produtoService.cadastrar(restauranteId, produto);
-        URI uri = URI.create("/produtos/" + novo.getId());
-        return ResponseEntity.created(uri).body(novo);
+    @PostMapping
+    public ResponseEntity<ProdutoResponseDTO> cadastrar(@Valid @RequestBody ProdutoDTO dto) {
+        Produto produto = produtoService.cadastrarProduto(dto);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                .buildAndExpand(produto.getId()).toUri();
+        return ResponseEntity.created(uri).body(toResponse(produto));
     }
 
-    // Listar todos os produtos
-    @GetMapping
-    public ResponseEntity<List<Produto>> listarTodos() {
-        return ResponseEntity.ok(produtoService.listarTodos());
-    }
-
-    // Buscar produto por ID
     @GetMapping("/{id}")
-    public ResponseEntity<Produto> buscarPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(produtoService.buscarPorId(id));
+    public ResponseEntity<ProdutoResponseDTO> buscarPorId(@PathVariable Long id) {
+        Produto produto = produtoService.buscarProdutoPorId(id);
+        return ResponseEntity.ok(toResponse(produto));
     }
 
-    // Atualizar produto
+    @GetMapping("/categoria/{categoria}")
+    public ResponseEntity<List<ProdutoResponseDTO>> buscarPorCategoria(@PathVariable String categoria) {
+        List<ProdutoResponseDTO> produtos = produtoService.buscarProdutosPorCategoria(categoria)
+                .stream().map(this::toResponse).collect(Collectors.toList());
+        return ResponseEntity.ok(produtos);
+    }
+
+    @GetMapping("/restaurantes/{restauranteId}/produtos")
+    public ResponseEntity<List<ProdutoResponseDTO>> buscarPorRestaurante(@PathVariable Long restauranteId) {
+        List<ProdutoResponseDTO> produtos = produtoService.buscarProdutosPorRestaurante(restauranteId)
+                .stream().map(this::toResponse).collect(Collectors.toList());
+        return ResponseEntity.ok(produtos);
+    }
+
     @PutMapping("/{id}")
-    public ResponseEntity<Produto> atualizar(
-            @PathVariable Long id,
-            @Valid @RequestBody Produto produto) {
-
-        Produto atualizado = produtoService.atualizar(id, produto);
-        return ResponseEntity.ok(atualizado);
+    public ResponseEntity<ProdutoResponseDTO> atualizar(@PathVariable Long id, @Valid @RequestBody ProdutoDTO dto) {
+        Produto atualizado = produtoService.atualizarProduto(id, dto);
+        return ResponseEntity.ok(toResponse(atualizado));
     }
 
-    // Alterar disponibilidade
     @PatchMapping("/{id}/disponibilidade")
-    public ResponseEntity<Void> alterarDisponibilidade(
-            @PathVariable Long id,
-            @RequestParam boolean disponivel) {
-
-        produtoService.alterarDisponibilidade(id, disponivel);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<ProdutoResponseDTO> alterarDisponibilidade(@PathVariable Long id, @RequestParam boolean disponivel) {
+        Produto produto = produtoService.alterarDisponibilidade(id, disponivel);
+        return ResponseEntity.ok(toResponse(produto));
     }
 
-    // Deletar produto
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        produtoService.deletar(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    // Listar produtos por restaurante
-    @GetMapping("/restaurante/{restauranteId}")
-    public ResponseEntity<List<Produto>> listarPorRestaurante(@PathVariable Long restauranteId) {
-        return ResponseEntity.ok(produtoService.listarPorRestaurante(restauranteId));
+    private ProdutoResponseDTO toResponse(Produto p) {
+        return new ProdutoResponseDTO(
+                p.getId(), p.getNome(), p.getDescricao(),
+                p.getCategoria(), p.getPreco(),
+                p.getDisponivel(), p.getRestaurante().getId()
+        );
     }
 }

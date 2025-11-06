@@ -1,45 +1,29 @@
 package com.deliverytech.delivery.service;
 
+import com.deliverytech.delivery.dto.ClienteDTO;
 import com.deliverytech.delivery.models.Cliente;
-import com.deliverytech.delivery.repository.ClienteRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import java.util.*;
+import java.util.List;
 
-@Service
-public class ClienteService {
+public interface ClienteService {
 
-    @Autowired
-    private ClienteRepository clienteRepository;
+    // Cadastra um novo cliente com validação de e-mail único
+    Cliente cadastrarCliente(ClienteDTO dto);
 
-    public Cliente cadastrarCliente(Cliente cliente) {
-        Optional<Cliente> existente = clienteRepository.findByEmail(cliente.getEmail());
-        if (existente.isPresent()) {
-            throw new IllegalArgumentException("E-mail já cadastrado!");
-        }
-        cliente.setAtivo(true);
-        return clienteRepository.save(cliente);
-    }
+    // Busca cliente por ID com exceção se não existir
+    Cliente buscarClientePorId(Long id);
 
-    public List<Cliente> listarTodos() {
-        return clienteRepository.findAll();
-    }
+    // Busca cliente por e-mail (para login/autenticação)
+    Cliente buscarClientePorEmail(String email);
 
-    public Cliente buscarPorId(Long id) {
-        return clienteRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado!"));
-    }
+    // Atualiza dados de cliente com validação de existência e e-mail
+    Cliente atualizarCliente(Long id, ClienteDTO dto);
 
-    public Cliente atualizarCliente(Long id, Cliente dadosAtualizados) {
-        Cliente cliente = buscarPorId(id);
-        cliente.setNome(dadosAtualizados.getNome());
-        cliente.setEmail(dadosAtualizados.getEmail());
-        return clienteRepository.save(cliente);
-    }
+    // Ativa ou desativa o cliente (toggle)
+    Cliente ativarDesativarCliente(Long id);
 
-    public void inativarCliente(Long id) {
-        Cliente cliente = buscarPorId(id);
-        cliente.setAtivo(false);
-        clienteRepository.save(cliente);
-    }
+    // Lista apenas clientes ativos
+    List<Cliente> listarClientesAtivos();
+
+    // Lista todos os clientes (independente do status)
+    List<Cliente> listarTodos();
 }

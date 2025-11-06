@@ -1,60 +1,33 @@
 package com.deliverytech.delivery.service;
 
+import com.deliverytech.delivery.dto.RestauranteDTO;
 import com.deliverytech.delivery.models.Restaurante;
-import com.deliverytech.delivery.repository.RestauranteRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import jakarta.validation.Valid;
 import java.util.List;
 
-@Service
-public class RestauranteService {
+public interface RestauranteService {
 
-    @Autowired
-    private RestauranteRepository restauranteRepository;
+    Restaurante cadastrarRestaurante(@Valid RestauranteDTO dto);
 
-    // Cadastrar restaurante
-    public Restaurante cadastrar(Restaurante restaurante) {
-        restaurante.setAtivo(true);
-        restaurante.setAvaliacao(0.0);
-        return restauranteRepository.save(restaurante);
-    }
+    Restaurante buscarRestaurantePorId(Long id);
 
-    // Listar todos os restaurantes
-    public List<Restaurante> listarTodos() {
-        return restauranteRepository.findAll();
-    }
+    List<Restaurante> buscarRestaurantesPorCategoria(String categoria);
 
-    // Buscar por ID
-    public Restaurante buscarPorId(Long id) {
-        return restauranteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Restaurante não encontrado!"));
-    }
+    List<Restaurante> buscarRestaurantesDisponiveis();
 
-    // Atualizar restaurante
-    public Restaurante atualizar(Long id, Restaurante atualizado) {
-        Restaurante restaurante = buscarPorId(id);
-        restaurante.setNome(atualizado.getNome());
-        restaurante.setCategoria(atualizado.getCategoria());
-        restaurante.setAvaliacao(atualizado.getAvaliacao());
-        return restauranteRepository.save(restaurante);
-    }
+    Restaurante atualizarRestaurante(Long id, @Valid RestauranteDTO dto);
 
-    // Ativar/Inativar restaurante
-    public Restaurante alterarStatus(Long id, boolean ativo) {
-        Restaurante restaurante = buscarPorId(id);
-        restaurante.setAtivo(ativo);
-        restauranteRepository.save(restaurante);
-        return restaurante;
-    }
+    double calcularTaxaEntrega(Long restauranteId, String cep);
 
-    // Buscar por categoria
-    public List<Restaurante> buscarPorCategoria(String categoria) {
-        return restauranteRepository.buscarAtivosPorCategoriaOrdenadosPorAvaliacao(categoria);
-    }
+    Restaurante cadastrar(@Valid RestauranteDTO dto);
 
-    // Deletar restaurante
-    public void deletar(Long id) {
-        Restaurante restaurante = buscarPorId(id);
-        restauranteRepository.delete(restaurante);
-    }
+    List<Restaurante> listarTodos();
+
+    Restaurante atualizar(Long id, @Valid RestauranteDTO dto);
+
+    Restaurante alterarStatus(Long id, boolean ativo);
+
+    void deletar(Long id);
+
+    List<Restaurante> listarDisponiveis();
 }
