@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ProdutoRepository extends JpaRepository<Produto, Long> {
@@ -17,5 +18,6 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
     List<Produto> findByRestauranteAndCategoriaIgnoreCase(Restaurante restaurante, String categoria);
     List<Produto> findByPrecoLessThanEqual(BigDecimal preco);
     List<Produto> findByRestaurante(Restaurante restaurante);
+    Optional<Restaurante> findByIdAndRestaurante(Long id, Restaurante restaurante);
 
     }

@@ -5,11 +5,22 @@ import java.math.BigDecimal;
 
 public class ItemPedidoDTO {
 
-    @NotNull
+    @NotNull(message = "O ID do produto é obrigatório.")
     private Long produtoId;
 
-    @NotNull
+    @NotNull(message = "A quantidade é obrigatória.")
+    private Integer quantidade;
+
     private BigDecimal preco;
+
+    // Construtores
+    public ItemPedidoDTO() {}
+
+    public ItemPedidoDTO(Long produtoId, Integer quantidade, BigDecimal preco) {
+        this.produtoId = produtoId;
+        this.quantidade = quantidade;
+        this.preco = preco;
+    }
 
     // Getters e Setters
     public Long getProdutoId() {
@@ -20,16 +31,19 @@ public class ItemPedidoDTO {
         this.produtoId = produtoId;
     }
 
+    public Integer getQuantidade() {
+        return quantidade;
+    }
+
+    public void setQuantidade(Integer quantidade) {
+        this.quantidade = quantidade;
+    }
+
     public BigDecimal getPreco() {
         return preco;
     }
 
     public void setPreco(BigDecimal preco) {
         this.preco = preco;
-    }
-
-    public Integer getQuantidade() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getQuantidade'");
     }
 }

@@ -18,17 +18,16 @@ public class ProdutoDTO {
     @DecimalMin(value = "0.01", message = "O preço deve ser maior que zero.")
     private BigDecimal preco;
 
-    @NotNull(message = "O ID do restaurante é obrigatório.")
-    private Long restauranteId;
+    private Boolean disponivel = true; // padrão
 
     public ProdutoDTO() {}
 
-    public ProdutoDTO(String nome, String descricao, String categoria, BigDecimal preco, Long restauranteId) {
+    public ProdutoDTO(String nome, String descricao, String categoria, BigDecimal preco, Boolean disponivel) {
         this.nome = nome;
         this.descricao = descricao;
         this.categoria = categoria;
         this.preco = preco;
-        this.restauranteId = restauranteId;
+        this.disponivel = disponivel;
     }
 
     public String getNome() {
@@ -63,11 +62,11 @@ public class ProdutoDTO {
         this.preco = preco;
     }
 
-    public Long getRestauranteId() {
-        return restauranteId;
+    public Boolean getDisponivel() {
+        return disponivel;
     }
 
-    public void setRestauranteId(Long restauranteId) {
-        this.restauranteId = restauranteId;
+    public void setDisponivel(Boolean disponivel) {
+        this.disponivel = disponivel;
     }
 }

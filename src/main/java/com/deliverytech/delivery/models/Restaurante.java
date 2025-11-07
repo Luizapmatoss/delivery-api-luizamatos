@@ -1,5 +1,6 @@
 package com.deliverytech.delivery.models;
 
+import com.deliverytech.delivery.dto.response.ProdutoResponseDTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -104,5 +105,25 @@ public class Restaurante {
                 ", taxaEntrega=" + taxaEntrega +
                 ", avaliacao=" + avaliacao +
                 '}';
+    }
+
+    public String getDescricao() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getDescricao'");
+    }
+
+    public BigDecimal getPreco() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getPreco'");
+    }
+
+    public boolean getDisponivel() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getDisponivel'");
+    }
+
+    public ProdutoResponseDTO getRestaurante() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getRestaurante'");
     }
 }

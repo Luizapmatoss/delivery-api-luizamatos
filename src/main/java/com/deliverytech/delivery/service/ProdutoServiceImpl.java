@@ -5,39 +5,34 @@ import com.deliverytech.delivery.models.Produto;
 import com.deliverytech.delivery.models.Restaurante;
 import com.deliverytech.delivery.repository.ProdutoRepository;
 import com.deliverytech.delivery.repository.RestauranteRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Service
 public class ProdutoServiceImpl implements ProdutoService {
 
-    @Autowired
-    private ProdutoRepository produtoRepository;
+    private final ProdutoRepository produtoRepository;
+    private final RestauranteRepository restauranteRepository;
 
-    @Autowired
-    private RestauranteRepository restauranteRepository;
+    public ProdutoServiceImpl(ProdutoRepository produtoRepository, RestauranteRepository restauranteRepository) {
+        this.produtoRepository = produtoRepository;
+        this.restauranteRepository = restauranteRepository;
+    }
 
     @Override
-    public Produto cadastrarProduto(ProdutoDTO dto) {
-        Restaurante restaurante = restauranteRepository.findById(dto.getRestauranteId())
+    @Transactional
+    public Produto cadastrarProduto(Long restauranteId, ProdutoDTO dto) {
+        Restaurante restaurante = restauranteRepository.findById(restauranteId)
                 .orElseThrow(() -> new IllegalArgumentException("Restaurante não encontrado!"));
-
-        if (dto.getNome() == null || dto.getNome().isBlank()) {
-            throw new IllegalArgumentException("O nome do produto é obrigatório!");
-        }
-        if (dto.getPreco() == null || dto.getPreco().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("O preço deve ser maior que zero!");
-        }
 
         Produto produto = new Produto();
         produto.setNome(dto.getNome());
         produto.setDescricao(dto.getDescricao());
         produto.setCategoria(dto.getCategoria());
         produto.setPreco(dto.getPreco());
-        produto.setDisponivel(true);
+        produto.setDisponivel(dto.getDisponivel());
         produto.setRestaurante(restaurante);
 
         return produtoRepository.save(produto);
@@ -47,48 +42,31 @@ public class ProdutoServiceImpl implements ProdutoService {
     public List<Produto> buscarProdutosPorRestaurante(Long restauranteId) {
         Restaurante restaurante = restauranteRepository.findById(restauranteId)
                 .orElseThrow(() -> new IllegalArgumentException("Restaurante não encontrado!"));
-
         return produtoRepository.findByRestaurante(restaurante);
     }
 
     @Override
     public Produto buscarProdutoPorId(Long id) {
-        Produto produto = produtoRepository.findById(id)
+        return produtoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado!"));
-
-        if (!produto.getDisponivel()) {
-            throw new IllegalArgumentException("Produto indisponível no momento!");
-        }
-
-        return produto;
     }
 
     @Override
+    @Transactional
     public Produto atualizarProduto(Long id, ProdutoDTO dto) {
-        Produto produto = produtoRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado!"));
-
-        if (dto.getNome() != null && !dto.getNome().isBlank()) {
-            produto.setNome(dto.getNome());
-        }
-        if (dto.getDescricao() != null) {
-            produto.setDescricao(dto.getDescricao());
-        }
-        if (dto.getCategoria() != null) {
-            produto.setCategoria(dto.getCategoria());
-        }
-        if (dto.getPreco() != null && dto.getPreco().compareTo(BigDecimal.ZERO) > 0) {
-            produto.setPreco(dto.getPreco());
-        }
-
+        Produto produto = buscarProdutoPorId(id);
+        produto.setNome(dto.getNome());
+        produto.setDescricao(dto.getDescricao());
+        produto.setCategoria(dto.getCategoria());
+        produto.setPreco(dto.getPreco());
+        produto.setDisponivel(dto.getDisponivel());
         return produtoRepository.save(produto);
     }
 
     @Override
+    @Transactional
     public Produto alterarDisponibilidade(Long id, boolean disponivel) {
-        Produto produto = produtoRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado!"));
-
+        Produto produto = buscarProdutoPorId(id);
         produto.setDisponivel(disponivel);
         return produtoRepository.save(produto);
     }
@@ -98,27 +76,47 @@ public class ProdutoServiceImpl implements ProdutoService {
         return produtoRepository.findByCategoriaIgnoreCase(categoria);
     }
 
+    // Métodos abaixo não são usados, mas estão aqui para cumprir a interface
     @Override
-    public Produto atualizarProduto(Long id, Produto produto) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'atualizarProduto'");
+    public Produto cadastrarProduto(ProdutoDTO dto) {
+        throw new UnsupportedOperationException("Use cadastrarProduto(Long restauranteId, ProdutoDTO dto)");
+    }
+
+    @Override
+    public Produto atualizarProduto(Long id, Long id2, ProdutoDTO dto) {
+        throw new UnsupportedOperationException("Não utilizado neste projeto");
     }
 
     @Override
     public Produto cadastrar(Long restauranteId, Produto produto) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'cadastrar'");
+        throw new UnsupportedOperationException("Não utilizado neste projeto");
+    }
+
+    @Override
+    public Produto alterarDisponibilidade(Long id, Long id2, boolean disponivel) {
+        throw new UnsupportedOperationException("Não utilizado neste projeto");
+    }
+
+    @Override
+    public Restaurante buscarProdutoPorIdERestaurante(Long restauranteId, Long id) {
+        Restaurante restaurante = restauranteRepository.findById(restauranteId)
+                .orElseThrow(() -> new IllegalArgumentException("Restaurante não encontrado!"));
+        return produtoRepository.findByIdAndRestaurante(id, restaurante)
+                .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado para este restaurante!"));
     }
 
     @Override
     public Object listarTodos() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'listarTodos'");
+        return produtoRepository.findAll();
     }
 
     @Override
     public void deletar(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deletar'");
+        produtoRepository.deleteById(id);
+    }
+
+    @Override
+    public Produto atualizarProduto(Long id, Produto produto) {
+        throw new UnsupportedOperationException("Não utilizado neste projeto");
     }
 }
