@@ -126,6 +126,9 @@ src/
 
 ---
 
+## 👩‍💻 Testes Postman
+- https://luiza-1090299.postman.co/workspace/luiza's-Workspace~299ce6b9-1c54-4994-836a-6f98a9e7e510/request/45491325-a0f8498d-7150-4301-8e06-8391155cadaf?action=share&creator=45491325&ctx=documentation
+
 ## 📲 Recursos Extras
 📸 Screenshots e configuração inicial
 Google Drive - Delivery Tech
