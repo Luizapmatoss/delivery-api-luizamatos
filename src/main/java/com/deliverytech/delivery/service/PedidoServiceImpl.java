@@ -34,46 +34,56 @@ public class PedidoServiceImpl implements PedidoService {
         this.itemPedidoRepository = itemPedidoRepository;
     }
 
-   @Override
-   @Transactional
-   public Pedido criarPedido(PedidoDTO dto) {
-    Cliente cliente = clienteRepository.findById(dto.getClienteId())
-    .orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado!"));
-    Restaurante restaurante = restauranteRepository.findById(dto.getRestauranteId())
-    .orElseThrow(() -> new IllegalArgumentException("Restaurante não encontrado!"));
-    
-    if (!cliente.getAtivo()) {
-        throw new IllegalArgumentException("Cliente inativo não pode fazer pedidos!");
-    }
+    @Override
+    @Transactional
+    public Pedido criarPedido(PedidoDTO dto) {
 
-    Pedido pedido = new Pedido();
-    pedido.setCliente(cliente);
-    pedido.setRestaurante(restaurante);
-    pedido.setStatus(StatusPedido.PENDENTE.name());
-    pedido.setDataCriacao(LocalDateTime.now());
+        // Buscar cliente
+        Cliente cliente = clienteRepository.findById(dto.getClienteId())
+                .orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado!"));
 
-    List<ItemPedido> itens = new ArrayList<>();
-    BigDecimal total = BigDecimal.ZERO;
+        // Buscar restaurante
+        Restaurante restaurante = restauranteRepository.findById(dto.getRestauranteId())
+                .orElseThrow(() -> new IllegalArgumentException("Restaurante não encontrado!"));
 
-    for (ItemPedidoDTO itemDTO : dto.getItens()) {
-        Produto produto = produtoRepository.findById(itemDTO.getProdutoId())
-                .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado!"));
-
-        if (!produto.getDisponivel()) {
-            throw new IllegalArgumentException("Produto indisponível: " + produto.getNome());
+        if (!cliente.getAtivo()) {
+            throw new IllegalArgumentException("Cliente inativo não pode fazer pedidos!");
         }
 
-        ItemPedido item = new ItemPedido(pedido, produto, itemDTO.getQuantidade(), produto.getPreco());
-        itens.add(item);
-        total = total.add(item.getSubtotal());
+        Pedido pedido = new Pedido();
+        pedido.setCliente(cliente);
+        pedido.setRestaurante(restaurante);
+        pedido.setStatus(StatusPedido.PENDENTE.name());
+        pedido.setDataCriacao(LocalDateTime.now());
+
+        List<ItemPedido> itens = new ArrayList<>();
+        BigDecimal total = BigDecimal.ZERO;
+
+        for (ItemPedidoDTO itemDTO : dto.getItens()) {
+            Produto produto = produtoRepository.findById(itemDTO.getProdutoId())
+                    .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado!"));
+
+            if (!produto.getDisponivel()) {
+                throw new IllegalArgumentException("Produto indisponível: " + produto.getNome());
+            }
+
+            // Cria item e calcula subtotal
+            ItemPedido item = new ItemPedido();
+            item.setPedido(pedido);
+            item.setProduto(produto);
+            item.setQuantidade(itemDTO.getQuantidade());
+            item.setPrecoUnitario(produto.getPreco());
+            item.setSubtotal(produto.getPreco().multiply(BigDecimal.valueOf(itemDTO.getQuantidade())));
+
+            itens.add(item);
+            total = total.add(item.getSubtotal());
+        }
+
+        pedido.setItens(itens);
+        pedido.setValorTotal(total);
+
+        return pedidoRepository.save(pedido);
     }
-
-    pedido.setItens(itens);
-    pedido.setValorTotal(total);
-
-    return pedidoRepository.save(pedido);
-}
-
 
     @Override
     public Pedido criarPedido(Pedido pedido) {

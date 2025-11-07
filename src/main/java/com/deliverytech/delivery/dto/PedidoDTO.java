@@ -9,14 +9,18 @@ public class PedidoDTO {
     @NotNull(message = "O ID do cliente é obrigatório.")
     private Long clienteId;
 
-    @NotEmpty(message = "A lista de produtos não pode estar vazia.")
-    private List<Long> produtosIds;
+    @NotNull(message = "O ID do restaurante é obrigatório.")
+    private Long restauranteId;
+
+    @NotEmpty(message = "A lista de itens não pode estar vazia.")
+    private List<ItemPedidoDTO> itens;
 
     public PedidoDTO() {}
 
-    public PedidoDTO(Long clienteId, List<Long> produtosIds) {
+    public PedidoDTO(Long clienteId, Long restauranteId, List<ItemPedidoDTO> itens) {
         this.clienteId = clienteId;
-        this.produtosIds = produtosIds;
+        this.restauranteId = restauranteId;
+        this.itens = itens;
     }
 
     public Long getClienteId() {
@@ -27,21 +31,19 @@ public class PedidoDTO {
         this.clienteId = clienteId;
     }
 
-    public List<Long> getProdutosIds() {
-        return produtosIds;
-    }
-
-    public void setProdutosIds(List<Long> produtosIds) {
-        this.produtosIds = produtosIds;
-    }
-
-    public ItemPedidoDTO[] getItens() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getItens'");
-    }
-
     public Long getRestauranteId() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getRestauranteId'");
+        return restauranteId;
+    }
+
+    public void setRestauranteId(Long restauranteId) {
+        this.restauranteId = restauranteId;
+    }
+
+    public List<ItemPedidoDTO> getItens() {
+        return itens;
+    }
+
+    public void setItens(List<ItemPedidoDTO> itens) {
+        this.itens = itens;
     }
 }
