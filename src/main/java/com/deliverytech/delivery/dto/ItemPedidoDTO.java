@@ -1,16 +1,33 @@
 package com.deliverytech.delivery.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
+@Schema(description = "DTO que representa um item dentro de um pedido.")
 public class ItemPedidoDTO {
 
+    @Schema(
+            description = "ID do produto selecionado para o pedido.",
+            example = "42",
+            required = true
+    )
     @NotNull(message = "O ID do produto é obrigatório.")
     private Long produtoId;
 
+    @Schema(
+            description = "Quantidade do produto desejada.",
+            example = "3",
+            minimum = "1",
+            required = true
+    )
     @NotNull(message = "A quantidade é obrigatória.")
     private Integer quantidade;
 
+    @Schema(
+            description = "Preço unitário do produto no momento do pedido.",
+            example = "19.90"
+    )
     private BigDecimal preco;
 
     // Construtores

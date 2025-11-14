@@ -2,10 +2,15 @@ package com.deliverytech.delivery.dto;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-
-import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * DTO responsável por representar os dados necessários
+ * para a criação de um novo pedido.
+ * 
+ * Validações garantem que o cliente, o restaurante
+ * e os itens sejam informados corretamente.
+ */
 public class PedidoDTO {
 
     @NotNull(message = "O ID do cliente é obrigatório.")
@@ -17,14 +22,17 @@ public class PedidoDTO {
     @NotEmpty(message = "A lista de itens não pode estar vazia.")
     private List<ItemPedidoDTO> itens;
 
+    // Construtor padrão
     public PedidoDTO() {}
 
+    // Construtor completo
     public PedidoDTO(Long clienteId, Long restauranteId, List<ItemPedidoDTO> itens) {
         this.clienteId = clienteId;
         this.restauranteId = restauranteId;
         this.itens = itens;
     }
 
+    // Getters e Setters
     public Long getClienteId() {
         return clienteId;
     }
@@ -47,15 +55,5 @@ public class PedidoDTO {
 
     public void setItens(List<ItemPedidoDTO> itens) {
         this.itens = itens;
-    }
-
-    public String getStatus() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getStatus'");
-    }
-
-    public BigDecimal getValorTotal() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getValorTotal'");
     }
 }
