@@ -161,14 +161,14 @@ public class PedidoServiceImpl implements PedidoService {
     }
 
     @Override
-    public Object listarPorRestaurante(Long restauranteId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'listarPorRestaurante'");
-    }
-
-    @Override
     public List<Pedido> listarComFiltros(String status, LocalDate data) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'listarComFiltros'");
+    }
+
+    @Override
+    public Object listarPorRestaurante(Long restauranteId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'listarPorRestaurante'");
     }
 }

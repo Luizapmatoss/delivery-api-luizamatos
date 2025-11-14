@@ -3,12 +3,14 @@ package com.deliverytech.delivery.controllers;
 import com.deliverytech.delivery.dto.ProdutoDTO;
 import com.deliverytech.delivery.dto.response.ProdutoResponseDTO;
 import com.deliverytech.delivery.models.Produto;
+import com.deliverytech.delivery.models.Restaurante;
 import com.deliverytech.delivery.service.ProdutoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,12 +48,17 @@ public class ProdutoController {
     }
 
     @GetMapping("/restaurantes/{restauranteId}/produtos/{id}")
-    public ResponseEntity<ProdutoResponseDTO> buscarPorId(
+    public ResponseEntity<Object> buscarPorId(
             @PathVariable Long restauranteId,
             @PathVariable Long id) {
 
         Produto produto = produtoService.buscarProdutoPorIdERestaurante(restauranteId, id);
         return ResponseEntity.ok(toResponse(produto));
+    }
+
+    private Object toResponse(Restaurante produto) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'toResponse'");
     }
 
     @PutMapping("/restaurantes/{restauranteId}/produtos/{id}")

@@ -8,40 +8,30 @@ import java.util.List;
 
 public interface ProdutoService {
 
-    // Cadastrar produto em um restaurante específico
+    // Criar produto dentro de um restaurante
     Produto cadastrarProduto(Long restauranteId, ProdutoDTO dto);
 
-    // Buscar produtos de um restaurante
+    // Listar produtos de um restaurante
     List<Produto> buscarProdutosPorRestaurante(Long restauranteId);
 
-    // Buscar um produto específico dentro de um restaurante
+    // Buscar produto específico dentro do restaurante
     Produto buscarProdutoPorIdERestaurante(Long restauranteId, Long id);
 
-    // Buscar por categoria 
+    // Buscar por categoria
     List<Produto> buscarProdutosPorCategoria(String categoria);
 
-    // Atualizar informações de um produto específico
+    // Buscar por nome (contém)
+    List<Produto> buscarPorNome(String nome);
+
+    // Atualizar produto dentro de um restaurante
     Produto atualizarProduto(Long restauranteId, Long id, ProdutoDTO dto);
 
-    // Alterar disponibilidade 
+    // Alterar disponibilidade
     Produto alterarDisponibilidade(Long restauranteId, Long id, boolean disponivel);
 
-    // Deletar um produto
+    // Deletar produto
     void deletar(Long id);
 
-    Produto buscarProdutoPorId(Long id);
-
-    Produto atualizarProduto(Long id, ProdutoDTO dto);
-
-    Produto alterarDisponibilidade(Long id, boolean disponivel);
-
-    Produto cadastrarProduto(ProdutoDTO dto);
-
-    Produto cadastrar(Long restauranteId, Produto produto);
-
-    Object listarTodos();
-
-    Produto atualizarProduto(Long id, Produto produto);
-
-    List<Produto> buscarPorNome(String nome);
+    // Listar todos
+    List<Produto> listarTodos();
 }

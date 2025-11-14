@@ -28,6 +28,6 @@ public interface PedidoService {
     Optional<Pedido> buscarPorId(Long id);
     Pedido atualizarPedido(Long id, PedidoDTO dto);
     boolean deletarPedido(Long id);
-    Object listarPorRestaurante(Long restauranteId);
     List<Pedido> listarComFiltros(String status, LocalDate data);
+    Object listarPorRestaurante(Long restauranteId);
 }

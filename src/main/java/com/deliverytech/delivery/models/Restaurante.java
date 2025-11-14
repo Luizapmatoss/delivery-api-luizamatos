@@ -126,4 +126,19 @@ public class Restaurante {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getRestaurante'");
     }
+
+    public void setDescricao(String descricao) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setDescricao'");
+    }
+
+    public void setPreco(BigDecimal preco) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setPreco'");
+    }
+
+    public void setDisponivel(boolean disponivel) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setDisponivel'");
+    }
 }
