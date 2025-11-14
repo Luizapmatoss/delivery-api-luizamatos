@@ -8,6 +8,7 @@ import com.deliverytech.delivery.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -79,7 +80,7 @@ public class PedidoServiceImpl implements PedidoService {
             total = total.add(item.getSubtotal());
         }
 
-        pedido.setItens(itens);
+        pedido.setItem(itens);
         pedido.setValorTotal(total);
 
         return pedidoRepository.save(pedido);
@@ -133,5 +134,41 @@ public class PedidoServiceImpl implements PedidoService {
     @Override
     public double calcularTotalPedido(Pedido pedido) {
         throw new UnsupportedOperationException("Unimplemented method 'calcularTotalPedido'");
+    }
+
+    @Override
+    public List<Pedido> listarTodos() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'listarTodos'");
+    }
+
+    @Override
+    public Optional<Pedido> buscarPorId(Long id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'buscarPorId'");
+    }
+
+    @Override
+    public Pedido atualizarPedido(Long id, PedidoDTO dto) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'atualizarPedido'");
+    }
+
+    @Override
+    public boolean deletarPedido(Long id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'deletarPedido'");
+    }
+
+    @Override
+    public Object listarPorRestaurante(Long restauranteId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'listarPorRestaurante'");
+    }
+
+    @Override
+    public List<Pedido> listarComFiltros(String status, LocalDate data) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'listarComFiltros'");
     }
 }

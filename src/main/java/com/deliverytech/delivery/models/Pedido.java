@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.deliverytech.delivery.dto.ItemPedidoDTO;
+
 @Entity
 @Table(name = "pedidos")
 public class Pedido {
@@ -55,24 +57,24 @@ public class Pedido {
         return cliente;
     }
 
-    public void setCliente(Cliente cliente) {
-        this.cliente = cliente;
+    public void setCliente(Cliente cliente2) {
+        this.cliente = cliente2;
     }
 
     public Restaurante getRestaurante() {
         return restaurante;
     }
 
-    public void setRestaurante(Restaurante restaurante) {
-        this.restaurante = restaurante;
+    public void setRestaurante(Restaurante restaurante2) {
+        this.restaurante = restaurante2;
     }
 
     public List<ItemPedido> getItens() {
         return itens;
     }
 
-    public void setItens(List<ItemPedido> itens) {
-        this.itens = itens;
+    public void setItem(List<ItemPedido> itens2) {
+        this.itens = itens2;
     }
 
     public BigDecimal getValorTotal() {
@@ -129,5 +131,10 @@ public class Pedido {
                 ", status='" + status + '\'' +
                 ", dataCriacao=" + dataCriacao +
                 '}';
+    }
+
+    public void setItens(List<ItemPedidoDTO> itens2) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setItens'");
     }
 }

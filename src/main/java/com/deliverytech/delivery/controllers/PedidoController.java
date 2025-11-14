@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -31,10 +32,26 @@ public class PedidoController {
         return ResponseEntity.ok(pedidoService.buscarPedidoPorId(id));
     }
 
+    // GET /api/pedidos - Listar com filtros (status, data)
+    @GetMapping
+    public ResponseEntity<List<Pedido>> listarComFiltros(
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) LocalDate data) {
+
+        List<Pedido> pedidos = pedidoService.listarComFiltros(status, data);
+        return ResponseEntity.ok(pedidos);
+    }
+
     // GET /api/clientes/{clienteId}/pedidos - Histórico do cliente
     @GetMapping("/cliente/{clienteId}")
     public ResponseEntity<Object> listarPorCliente(@PathVariable Long clienteId) {
         return ResponseEntity.ok(pedidoService.listarPorCliente(clienteId));
+    }
+
+    // GET /api/restaurantes/{restauranteId}/pedidos - Pedidos do restaurante
+    @GetMapping("/restaurante/{restauranteId}")
+    public ResponseEntity<Object> listarPorRestaurante(@PathVariable Long restauranteId) {
+        return ResponseEntity.ok(pedidoService.listarPorRestaurante(restauranteId));
     }
 
     // PATCH /api/pedidos/{id}/status - Atualizar status

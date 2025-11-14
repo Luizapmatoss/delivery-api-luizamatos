@@ -7,27 +7,35 @@ import java.util.List;
 
 public interface RestauranteService {
 
+    // Cadastrar novo restaurante
     Restaurante cadastrarRestaurante(@Valid RestauranteDTO dto);
 
+    // Buscar por ID
     Restaurante buscarRestaurantePorId(Long id);
 
+    // Buscar por categoria
     List<Restaurante> buscarRestaurantesPorCategoria(String categoria);
 
-    List<Restaurante> buscarRestaurantesDisponiveis();
-
+    // Atualizar restaurante
     Restaurante atualizarRestaurante(Long id, @Valid RestauranteDTO dto);
 
+    // Calcular taxa de entrega com base no CEP
     double calcularTaxaEntrega(Long restauranteId, String cep);
 
-    Restaurante cadastrar(@Valid RestauranteDTO dto);
+    // Alterar status (ativar/desativar)
+    Restaurante alterarStatus(Long id);
 
-    List<Restaurante> listarTodos();
+    // Listar com filtros opcionais (categoria, ativo)
+    List<Restaurante> listarComFiltros(String categoria, Boolean ativo);
 
-    Restaurante atualizar(Long id, @Valid RestauranteDTO dto);
+    // Buscar restaurantes próximos de um CEP
+    List<Restaurante> buscarRestaurantesProximos(String cep);
+    List<Restaurante> listarProximos(String cep);
 
-    Restaurante alterarStatus(Long id, boolean ativo);
-
+    // (Opcional) Deletar restaurante
     void deletar(Long id);
+
+	List<Restaurante> buscarRestaurantesDisponiveis();
 
     List<Restaurante> listarDisponiveis();
 }

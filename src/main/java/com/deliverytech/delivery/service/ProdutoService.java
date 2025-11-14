@@ -15,7 +15,7 @@ public interface ProdutoService {
     List<Produto> buscarProdutosPorRestaurante(Long restauranteId);
 
     // Buscar um produto específico dentro de um restaurante
-    Restaurante buscarProdutoPorIdERestaurante(Long restauranteId, Long id);
+    Produto buscarProdutoPorIdERestaurante(Long restauranteId, Long id);
 
     // Buscar por categoria 
     List<Produto> buscarProdutosPorCategoria(String categoria);
@@ -42,4 +42,6 @@ public interface ProdutoService {
     Object listarTodos();
 
     Produto atualizarProduto(Long id, Produto produto);
+
+    List<Produto> buscarPorNome(String nome);
 }

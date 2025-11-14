@@ -7,7 +7,9 @@ import com.deliverytech.delivery.models.Pedido;
 
 import jakarta.validation.Valid;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface PedidoService {
 
@@ -22,4 +24,10 @@ public interface PedidoService {
     Pedido atualizarStatusPedido(Long id, StatusPedido novoStatus);
     double calcularTotalPedido(List<ItemPedidoDTO> itens);
     double calcularTotalPedido(Pedido pedido);
+    List<Pedido> listarTodos();
+    Optional<Pedido> buscarPorId(Long id);
+    Pedido atualizarPedido(Long id, PedidoDTO dto);
+    boolean deletarPedido(Long id);
+    Object listarPorRestaurante(Long restauranteId);
+    List<Pedido> listarComFiltros(String status, LocalDate data);
 }

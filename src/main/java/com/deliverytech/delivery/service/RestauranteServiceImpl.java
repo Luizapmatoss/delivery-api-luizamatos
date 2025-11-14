@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class RestauranteServiceImpl implements RestauranteService {
@@ -44,11 +45,6 @@ public class RestauranteServiceImpl implements RestauranteService {
     }
 
     @Override
-    public List<Restaurante> buscarRestaurantesDisponiveis() {
-        return restauranteRepository.findByAtivoTrue();
-    }
-
-    @Override
     public Restaurante atualizarRestaurante(Long id, RestauranteDTO dto) {
         Restaurante restaurante = buscarRestaurantePorId(id);
 
@@ -67,43 +63,46 @@ public class RestauranteServiceImpl implements RestauranteService {
             throw new IllegalArgumentException("Restaurante inativo não pode calcular taxa de entrega!");
         }
 
+        // Exemplo: taxa simulada conforme prefixo do CEP
         int regiao = Integer.parseInt(cep.substring(0, 2));
         return switch (regiao) {
-            case 30 -> 5.0;
-            case 40 -> 8.0;
-            default -> 10.0;
+            case 30 -> 5.0;  // Belo Horizonte
+            case 40 -> 8.0;  // Salvador
+            default -> 10.0; // Outras regiões
         };
     }
 
+    // Novo método: alternar status (ativa/desativa)
     @Override
-    public Restaurante cadastrar(RestauranteDTO dto) {
-        Restaurante restaurante = new Restaurante();
-        restaurante.setNome(dto.getNome());
-        restaurante.setCategoria(dto.getCategoria());
-        restaurante.setAvaliacao(dto.getAvaliacao() != null ? dto.getAvaliacao() : 0.0);
-        restaurante.setAtivo(true);
-        return restauranteRepository.save(restaurante);
-    }
-
-    @Override
-    public List<Restaurante> listarTodos() {
-        return restauranteRepository.findAll();
-    }
-
-    @Override
-    public Restaurante atualizar(Long id, RestauranteDTO dto) {
-        Restaurante existente = buscarRestaurantePorId(id);
-        existente.setNome(dto.getNome());
-        existente.setCategoria(dto.getCategoria());
-        existente.setAvaliacao(dto.getAvaliacao());
-        return restauranteRepository.save(existente);
-    }
-
-    @Override
-    public Restaurante alterarStatus(Long id, boolean ativo) {
+    public Restaurante alterarStatus(Long id) {
         Restaurante restaurante = buscarRestaurantePorId(id);
-        restaurante.setAtivo(ativo);
+        restaurante.setAtivo(!restaurante.getAtivo()); // inverte o status atual
         return restauranteRepository.save(restaurante);
+    }
+
+    // Novo método: listar com filtros
+    @Override
+    public List<Restaurante> listarComFiltros(String categoria, Boolean ativo) {
+        List<Restaurante> todos = restauranteRepository.findAll();
+
+        return todos.stream()
+                .filter(r -> categoria == null || r.getCategoria().equalsIgnoreCase(categoria))
+                .filter(r -> ativo == null || r.getAtivo().equals(ativo))
+                .collect(Collectors.toList());
+    }
+
+    // Novo método: buscar restaurantes próximos (simulação)
+    @Override
+    public List<Restaurante> buscarRestaurantesProximos(String cep) {
+        // Exemplo básico: retorna todos os ativos se o CEP começar com "30"
+        if (cep.startsWith("30")) {
+            return restauranteRepository.findByAtivoTrue();
+        }
+        // senão retorna só os com avaliação alta
+        return restauranteRepository.findByAtivoTrue()
+                .stream()
+                .filter(r -> r.getAvaliacao() >= 4.0)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -115,5 +114,17 @@ public class RestauranteServiceImpl implements RestauranteService {
     @Override
     public List<Restaurante> listarDisponiveis() {
         return restauranteRepository.findByAtivoTrue();
+    }
+
+    @Override
+    public List<Restaurante> buscarRestaurantesDisponiveis() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'buscarRestaurantesDisponiveis'");
+    }
+
+    @Override
+    public List<Restaurante> listarProximos(String cep) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'listarProximos'");
     }
 }

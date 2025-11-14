@@ -3,7 +3,6 @@ package com.deliverytech.delivery.controllers;
 import com.deliverytech.delivery.dto.ProdutoDTO;
 import com.deliverytech.delivery.dto.response.ProdutoResponseDTO;
 import com.deliverytech.delivery.models.Produto;
-import com.deliverytech.delivery.models.Restaurante;
 import com.deliverytech.delivery.service.ProdutoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +14,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/restaurantes/{restauranteId}/produtos")
+@RequestMapping("/api")
 public class ProdutoController {
 
     @Autowired
     private ProdutoService produtoService;
 
-    @PostMapping
+    // PRODUTOS DO RESTAURANTE
+    @PostMapping("/restaurantes/{restauranteId}/produtos")
     public ResponseEntity<ProdutoResponseDTO> cadastrar(
             @PathVariable Long restauranteId,
             @Valid @RequestBody ProdutoDTO dto) {
@@ -36,7 +36,7 @@ public class ProdutoController {
         return ResponseEntity.created(uri).body(toResponse(produto));
     }
 
-    @GetMapping
+    @GetMapping("/restaurantes/{restauranteId}/produtos")
     public ResponseEntity<List<ProdutoResponseDTO>> listarPorRestaurante(@PathVariable Long restauranteId) {
         List<ProdutoResponseDTO> produtos = produtoService.buscarProdutosPorRestaurante(restauranteId)
                 .stream()
@@ -45,16 +45,16 @@ public class ProdutoController {
         return ResponseEntity.ok(produtos);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Object> buscarPorId(
+    @GetMapping("/restaurantes/{restauranteId}/produtos/{id}")
+    public ResponseEntity<ProdutoResponseDTO> buscarPorId(
             @PathVariable Long restauranteId,
             @PathVariable Long id) {
 
-        Restaurante produto = produtoService.buscarProdutoPorIdERestaurante(restauranteId, id);
+        Produto produto = produtoService.buscarProdutoPorIdERestaurante(restauranteId, id);
         return ResponseEntity.ok(toResponse(produto));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/restaurantes/{restauranteId}/produtos/{id}")
     public ResponseEntity<ProdutoResponseDTO> atualizar(
             @PathVariable Long restauranteId,
             @PathVariable Long id,
@@ -64,8 +64,8 @@ public class ProdutoController {
         return ResponseEntity.ok(toResponse(atualizado));
     }
 
-    @PatchMapping("/{id}/disponibilidade")
-    public ResponseEntity<Object> alterarDisponibilidade(
+    @PatchMapping("/restaurantes/{restauranteId}/produtos/{id}/disponibilidade")
+    public ResponseEntity<ProdutoResponseDTO> alterarDisponibilidade(
             @PathVariable Long restauranteId,
             @PathVariable Long id,
             @RequestParam boolean disponivel) {
@@ -74,20 +74,45 @@ public class ProdutoController {
         return ResponseEntity.ok(toResponse(produto));
     }
 
-    private Object toResponse(Restaurante produto) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'toResponse'");
+    // DELETE /api/produtos/{id}
+    @DeleteMapping("/produtos/{id}")
+    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+        produtoService.deletar(id);
+        return ResponseEntity.noContent().build();
     }
 
-    private ProdutoResponseDTO toResponse(Produto atualizado) {
+    // GET /api/produtos/categoria/{categoria}
+    @GetMapping("/produtos/categoria/{categoria}")
+    public ResponseEntity<List<ProdutoResponseDTO>> buscarPorCategoria(@PathVariable String categoria) {
+        List<ProdutoResponseDTO> produtos = produtoService.buscarProdutosPorCategoria(categoria)
+                .stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(produtos);
+    }
+
+    // GET /api/produtos/buscar?nome={nome}
+    @GetMapping("/produtos/buscar")
+    public ResponseEntity<List<ProdutoResponseDTO>> buscarPorNome(@RequestParam String nome) {
+        List<Produto> produtos = produtoService.buscarPorNome(nome);
+
+        List<ProdutoResponseDTO> response = produtos.stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(response);
+    }
+
+    // Conversor para DTO
+    private ProdutoResponseDTO toResponse(Produto produto) {
         return new ProdutoResponseDTO(
-                atualizado.getId(),
-                atualizado.getNome(),
-                atualizado.getDescricao(),
-                atualizado.getCategoria(),
-                atualizado.getPreco(),
-                atualizado.getDisponivel(),
-                atualizado.getRestaurante().getId()
+                produto.getId(),
+                produto.getNome(),
+                produto.getDescricao(),
+                produto.getCategoria(),
+                produto.getPreco(),
+                produto.getDisponivel(),
+                produto.getRestaurante().getId()
         );
     }
 }
